@@ -70,6 +70,14 @@ wget https://pjreddie.com/media/files/yolov3-tiny.weights -O data/yolov3-tiny.we
 python convert.py --weights ./data/yolov3-tiny.weights --output ./checkpoints/yolov3-tiny.tf --tiny
 ```
 
+### Batch Detection
+The script will search for the file dataIn.txt located in the specified directory. 
+The image names should be listed in the file. The same directory should contain the images.
+```bash
+# yolov3:
+python3 batch_detect.py --dataset ./data/
+```
+
 ### Detection
 
 ```bash
