@@ -65,7 +65,8 @@ def main(_argv):
     print("CLASS PRINT")	
     print(classes)
     for detected_class in classes:
-    print(detected_class)
+        print(detected_class)
+
     print("NUM PRINT")
     print(num)
     for num in nums:
