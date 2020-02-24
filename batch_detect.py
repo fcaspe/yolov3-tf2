@@ -16,7 +16,7 @@ flags.DEFINE_string('weights', './checkpoints/yolov3.tf',
 flags.DEFINE_boolean('tiny', False, 'yolov3 or yolov3-tiny')
 flags.DEFINE_integer('size', 416, 'resize images to')
 flags.DEFINE_string('dataset', None, 'path to dataset directory')
-flags.DEFINE_string('output', './output.jpg', 'path to output image')
+flags.DEFINE_string('output', None, 'path to output results')
 flags.DEFINE_integer('num_classes', 80, 'number of classes in the model')
 
 def convert_box_to_img_size(img_size,box):
@@ -53,8 +53,11 @@ def main(_argv):
     #PARSE THE FIRST IMAGE FILENAME
     #OPEN THE IMAGE AS img_raw
 
+    #open dataset 
     dataIn_file = FLAGS.dataset + "/dataIn.txt"
     fp = open(dataIn_file)
+    #create results file
+    fout = open(FLAGS.output,"w")  
     cnt = 1
     line = fp.readline()
     while line:
@@ -78,7 +81,15 @@ def main(_argv):
 
 
         t2 = time.time()
-        logging.info('time: {}'.format(t2 - t1))
+        #logging.info('time: {}'.format(t2 - t1))
+        
+        #Log in idl
+        output_line = "{0:c}{1:s}{2:c}; ".format(34,image_name,34)
+        for i in range(nums[0]):
+            int_box = convert_box_to_img_size(img_raw.shape,np.array(boxes[0][i]))
+            output_line = output_line + "({}, {}, {}, {}):-{}, ".format(int_box[0],int_box[1],int_box[2],int_box[3],scores[0][i])
+        fout.write(output_line + "\n")
+        
         print("Persons detected:")
         for i in range(nums[0]):
             # Only process class 0 = person.
@@ -89,6 +100,9 @@ def main(_argv):
                 int_box = convert_box_to_img_size(img_raw.shape,np.array(boxes[0][i]))
                 print("\t\tBOX: " + format(int_box))
 
+    fp.close()
+    fout.close()
+        
 if __name__ == '__main__':
     try:
         app.run(main)
