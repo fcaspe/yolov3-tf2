@@ -31,7 +31,7 @@ def convert_box_to_img_size(img_size,box):
     int_box[2] = int_box[2] - int_box[0]
     int_box[3] = int_box[3] - int_box[1]
     
-    return int_box
+    return int_box.astype(int)
 
 
 def main(_argv):
