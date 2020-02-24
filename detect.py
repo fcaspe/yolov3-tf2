@@ -53,25 +53,24 @@ def main(_argv):
     boxes, scores, classes, nums = yolo(img)
 
     print("BOX PRINT")
-    print(boxes)
+    #print(boxes)
     for box in boxes:
         print(box)
 
     print("SCORE PRINT")		
-    print(scores)
+    #print(scores)
     for score in scores:
         print(score)
 
     print("CLASS PRINT")	
-    print(classes)
+    #print(classes)
     for detected_class in classes:
         print(detected_class)
 
     print("NUM PRINT")
-    print(num)
     for num in nums:
         print(num)
-	
+    
     t2 = time.time()
     logging.info('time: {}'.format(t2 - t1))
 
