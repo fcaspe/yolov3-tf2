@@ -56,9 +56,20 @@ def main(_argv):
         dataset = dataset.shuffle(512)
         img_raw, _label = next(iter(dataset.take(1)))
     else:
+        #OPEN THE IMAGE LIST
+        #PARSE THE FIRST IMAGE FILENAME
+        #OPEN THE IMAGE AS img_raw
+        
+        #STUB -- CHANGE LATER
+        image_name = FLAGS.image
+        
+        
+        print(image_name)
         img_raw = tf.image.decode_image(
             open(FLAGS.image, 'rb').read(), channels=3)
 
+    
+    # IMAGE PROCESSING AFTER WE TAKE THE RAW ONE.
     img = tf.expand_dims(img_raw, 0)
     img = transform_images(img, FLAGS.size)
 
