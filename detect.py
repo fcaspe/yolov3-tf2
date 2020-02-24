@@ -20,6 +20,19 @@ flags.DEFINE_string('tfrecord', None, 'tfrecord instead of image')
 flags.DEFINE_string('output', './output.jpg', 'path to output image')
 flags.DEFINE_integer('num_classes', 80, 'number of classes in the model')
 
+def convert_box_to_img_size(img_size,box):
+    int_box = np.zeros(4)
+    int_box[0] = box[0]*img_size[1];
+    int_box[1] = box[1]*img_size[0];
+    int_box[2] = box[2]*img_size[1];
+    int_box[3] = box[3]*img_size[0];
+    
+    #Convert to width and height
+    int_box[2] = int_box[2] - int_box[0]
+    int_box[3] = int_box[3] - int_box[1]
+    
+    return int_box
+
 
 def main(_argv):
     physical_devices = tf.config.experimental.list_physical_devices('GPU')
@@ -52,26 +65,11 @@ def main(_argv):
     t1 = time.time()
     boxes, scores, classes, nums = yolo(img)
 
-    print("BOX PRINT")
-    #print(boxes)
-    for box in boxes:
-        print(box)
 
-    print("SCORE PRINT")		
-    #print(scores)
-    for score in scores:
-        print(score)
-
-    print("CLASS PRINT")	
-    #print(classes)
-    for detected_class in classes:
-        print(detected_class)
-
-    print("NUM PRINT")
-    for num in nums:
-        print(num)
-    
     t2 = time.time()
+    print("FLAGS.size: " + format(FLAGS.size))
+    print("Image RAW size: " + format(img_raw.shape))
+    print("Image size: " + format(img.shape))
     logging.info('time: {}'.format(t2 - t1))
 
     logging.info('detections:')
@@ -85,6 +83,15 @@ def main(_argv):
     cv2.imwrite(FLAGS.output, img)
     logging.info('output saved to: {}'.format(FLAGS.output))
 
+    print("Persons detected:")
+    for i in range(nums[0]):
+        # Only process class 0 = person.
+        if(int(classes[0][i]) == 0):
+            print("\tPersonID " + format(i))
+            print("\t\tSCORE: " + format(scores[0][i]))
+            
+            int_box = convert_box_to_img_size(img_raw.shape,np.array(boxes[0][i]))
+            print("\t\tBOX: " + format(int_box))
 
 if __name__ == '__main__':
     try:
