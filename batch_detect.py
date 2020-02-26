@@ -54,7 +54,7 @@ def main(_argv):
     #OPEN THE IMAGE AS img_raw
 
     #open dataset 
-    dataIn_file = FLAGS.dataset + "/dataIn.txt"
+    dataIn_file = FLAGS.dataset + "/dataIn_yolo.txt"
     fp = open(dataIn_file)
     #create results file
     fout = open(FLAGS.output,"w")  
@@ -87,7 +87,7 @@ def main(_argv):
         output_line = "{0:c}{1:s}{2:c}; ".format(34,image_name,34)
         for i in range(nums[0]):
             int_box = convert_box_to_img_size(img_raw.shape,np.array(boxes[0][i]))
-            output_line = output_line + "({}, {}, {}, {}):-{}, ".format(int_box[0],int_box[1],int_box[2],int_box[3],scores[0][i])
+            output_line = output_line + "({}, {}, {}, {}):{}, ".format(int_box[0],int_box[1],int_box[2],int_box[3],scores[0][i])
         fout.write(output_line + "\n")
         
         print("Persons detected:")
