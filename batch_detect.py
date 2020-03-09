@@ -18,7 +18,8 @@ flags.DEFINE_integer('size', 416, 'resize images to')
 flags.DEFINE_string('dataset', None, 'path to dataset directory')
 flags.DEFINE_string('output', None, 'path to output results')
 flags.DEFINE_integer('num_classes', 80, 'number of classes in the model')
-
+flags.DEFINE_integer('min_area', 0, 'Filter: Area restriction in bounding box')
+flags.DEFINE_boolean('debug', False, 'Enable debug print flag.')
 def convert_box_to_img_size(img_size,box):
     int_box = np.zeros(4)
     int_box[0] = box[0]*img_size[1];
@@ -89,18 +90,24 @@ def main(_argv):
             # Only process class 0 = person.
             if(int(classes[0][i]) == 0):
                 int_box = convert_box_to_img_size(img_raw.shape,np.array(boxes[0][i]))
-                output_line = output_line + "({}, {}, {}, {}):{}, ".format(int_box[0],int_box[1],int_box[2],int_box[3],scores[0][i])
+                area_of_box = int_box[2]*int_box[3]
+                if(FLAGS.debug):
+                    if(int(classes[0][i]) == 0):
+                        print("\tPersonID " + format(i))
+                        print("\t\tSCORE: " + format(scores[0][i]))
+                        print("\t\tBOX : " + format(int_box) + " Area: " + format(area_of_box))
+                #Check if we are enforcing minimum area.
+                if(FLAGS.min_area != 0 ):
+                    #Check area of box and avoid writing it to .idl if it is not big enough.
+                    if(area_of_box >= FLAGS.min_area):
+                        output_line = output_line + "({}, {}, {}, {}):{}, ".format(int_box[0],int_box[1],int_box[2],int_box[3],scores[0][i])
+                    else:
+                        if(FLAGS.debug):
+                            print("\t\tFiltered!")
+                else:
+                    output_line = output_line + "({}, {}, {}, {}):{}, ".format(int_box[0],int_box[1],int_box[2],int_box[3],scores[0][i])
         fout.write(output_line + "\n")
-        
-        print("Persons detected:")
-        for i in range(nums[0]):
-            # Only process class 0 = person.
-            if(int(classes[0][i]) == 0):
-                print("\tPersonID " + format(i))
-                print("\t\tSCORE: " + format(scores[0][i]))
-            
-                int_box = convert_box_to_img_size(img_raw.shape,np.array(boxes[0][i]))
-                print("\t\tBOX: " + format(int_box))
+
 
     fp.close()
     fout.close()
