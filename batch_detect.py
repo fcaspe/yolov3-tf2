@@ -60,12 +60,16 @@ def main(_argv):
     #create results file
     fout = open(FLAGS.output,"w")  
     cnt = 1
+    
+    filtered_boxes = 0
+    print("Starting on dataset: " + FLAGS.dataset) 
     line = fp.readline()
     while line:
         #print("Line {}: {}".format(cnt, line.strip()))
         image_name = FLAGS.dataset + line
         image_name = image_name[0:len(image_name)-1]
-        print(image_name)
+        if(FLAGS.debug):
+            print("Processing " + image_name)
         line = fp.readline()
         cnt += 1
         # GET THE RAW IMAGE
@@ -102,6 +106,7 @@ def main(_argv):
                     if(area_of_box >= FLAGS.min_area):
                         output_line = output_line + "({}, {}, {}, {}):{}, ".format(int_box[0],int_box[1],int_box[2],int_box[3],scores[0][i])
                     else:
+                        filtered_boxes = filtered_boxes + 1
                         if(FLAGS.debug):
                             print("\t\tFiltered!")
                 else:
@@ -111,6 +116,9 @@ def main(_argv):
 
     fp.close()
     fout.close()
+    if(FLAGS.min_area != 0 ):
+        print("Filtered boxes: " + format(filtered_boxes))
+    print("Dataset: " + FLAGS.dataset + " DONE!") 
         
 if __name__ == '__main__':
     try:
